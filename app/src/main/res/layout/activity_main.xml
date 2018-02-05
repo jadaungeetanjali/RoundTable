@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
     tools:context="com.silive.pc.roundtable.MainActivity">
 
     <android.support.v7.widget.Toolbar
@@ -22,8 +21,8 @@
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/login_button"
         android:onClick="logInClicked"
+        android:background="@color/colorPrimary"
         android:text="@string/login"
         android:textColor="@android:color/background_light"
         android:textSize="24sp"
@@ -40,7 +39,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:background="@drawable/login_button"
+        android:background="@color/colorPrimary"
         android:onClick="signUpClicked"
         android:text="@string/signup"
         android:textColor="@android:color/background_light"

@@ -1,8 +1,10 @@
 package com.silive.pc.roundtable;
 
 import android.app.ProgressDialog;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +12,9 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,8 +24,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    EditText signUpEmail, signUpPassword;
-    Button signUpButton;
+    private EditText signUpEmail, signUpPassword, signUpUsername;
+    private TextInputLayout inputLayoutName, inputLayoutEmail, inputLayoutPassword;
     String responseMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +36,13 @@ public class SignUpActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        signUpEmail = (EditText) findViewById(R.id.sign_up_email);
-        signUpPassword = (EditText) findViewById(R.id.sign_up_password);
+        inputLayoutName = (TextInputLayout) findViewById(R.id.sign_up_input_layout_name);
+        inputLayoutEmail = (TextInputLayout) findViewById(R.id.sign_up_input_layout_email);
+        inputLayoutPassword = (TextInputLayout) findViewById(R.id.sign_up_input_layout_password);
+        signUpUsername =  findViewById(R.id.sign_up_input_name);
+        signUpEmail =  findViewById(R.id.sign_up_input_email);
+        signUpPassword = findViewById(R.id.sign_up_input_password);
+
     }
 
     private void userSignUp() {
@@ -41,20 +51,16 @@ public class SignUpActivity extends AppCompatActivity {
         progressDialog.setMessage("Signing Up...");
         progressDialog.show();
 
+        String username = signUpUsername.getText().toString().trim();
         String email = signUpEmail.getText().toString().trim();
         String password = signUpPassword.getText().toString().trim();
 
-        //building retrofit object
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(APIUrl.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
         //Defining retrofit api service
-        APIService service = retrofit.create(APIService.class);
+        APIService service = ServiceGenerator.createService(APIService.class);
 
         //Defining the user object as we need to pass it with the call
-        User user = new User(email, password);
+        User user = new User(email, password, username);
 
         //defining the call
         Call<ResponseBody> call = service.createUser(user);
@@ -66,15 +72,33 @@ public class SignUpActivity extends AppCompatActivity {
                 //hiding progress dialog
                 progressDialog.dismiss();
 
-                try {
-                     responseMessage = response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                //displaying the message from the response as toast
-                Toast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG).show();
-            }
+                if (response.isSuccessful()) {
+                    try {
+                        responseMessage = response.body().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
+                    Log.i("response message", responseMessage);
+                    //displaying the message from the response as toast
+                    Toast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG).show();
+                }else {
+                    // error case
+                    switch (response.code()) {
+                        case 404:
+                            Toast.makeText(getApplicationContext(), "not found", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 503:
+                            Toast.makeText(getApplicationContext(), "Service Unavailable", Toast.LENGTH_SHORT).show();
+                            break;
+                        case 500:
+                            Toast.makeText(getApplicationContext(), "User exists already", Toast.LENGTH_SHORT).show();
+                        default:
+                            Toast.makeText(getApplicationContext(), "unknown error", Toast.LENGTH_SHORT).show();
+                            break;
+                    }
+                }
+            }
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 progressDialog.dismiss();
@@ -86,6 +110,5 @@ public class SignUpActivity extends AppCompatActivity {
     public void SignUp(View view) {
         userSignUp();
     }
-
 
 }

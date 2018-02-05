@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signUpClicked(View view) {
+        Log.i("main", "sign up in main clicked");
         Toast.makeText(this, "signUp in main clicked", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
         startActivity(intent);

@@ -1,5 +1,7 @@
 package com.silive.pc.roundtable;
 
+import android.util.Log;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,8 +14,8 @@ import retrofit2.http.POST;
 
 public interface APIService {
 
-    @Headers({"Content-Type: application/json",
-    "Authorization: Basic Z2VldGFuamFsaTpnZWV0YW5qYWxp"})
+
+    @Headers("Content-Type: application/json")
     @POST("account/register")
     Call<ResponseBody> createUser(@Body User user);
 }
