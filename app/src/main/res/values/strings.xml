@@ -2,4 +2,6 @@
     <string name="app_name">Round Table</string>
     <string name="login">Login</string>
     <string name="signup">SignUp</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 </resources>

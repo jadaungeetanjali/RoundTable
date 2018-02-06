@@ -6,9 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.sdsmdg.tastytoast.TastyToast;
 
 import java.io.IOException;
 
@@ -24,6 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignUpActivity extends AppCompatActivity {
 
+    private static String username, email, password;
     private EditText signUpEmail, signUpPassword, signUpUsername;
     private TextInputLayout inputLayoutName, inputLayoutEmail, inputLayoutPassword;
     String responseMessage;
@@ -51,9 +55,9 @@ public class SignUpActivity extends AppCompatActivity {
         progressDialog.setMessage("Signing Up...");
         progressDialog.show();
 
-        String username = signUpUsername.getText().toString().trim();
-        String email = signUpEmail.getText().toString().trim();
-        String password = signUpPassword.getText().toString().trim();
+        username = signUpUsername.getText().toString().trim();
+        email = signUpEmail.getText().toString().trim();
+        password = signUpPassword.getText().toString().trim();
 
 
         //Defining retrofit api service
@@ -81,20 +85,20 @@ public class SignUpActivity extends AppCompatActivity {
 
                     Log.i("response message", responseMessage);
                     //displaying the message from the response as toast
-                    Toast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG).show();
+                    TastyToast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG,TastyToast.SUCCESS).show();
                 }else {
                     // error case
                     switch (response.code()) {
                         case 404:
-                            Toast.makeText(getApplicationContext(), "not found", Toast.LENGTH_SHORT).show();
+                            TastyToast.makeText(getApplicationContext(), "not found", Toast.LENGTH_SHORT,TastyToast.CONFUSING).show();
                             break;
                         case 503:
-                            Toast.makeText(getApplicationContext(), "Service Unavailable", Toast.LENGTH_SHORT).show();
+                            TastyToast.makeText(getApplicationContext(), "Service Unavailable", Toast.LENGTH_SHORT,TastyToast.ERROR).show();
                             break;
                         case 500:
-                            Toast.makeText(getApplicationContext(), "User exists already", Toast.LENGTH_SHORT).show();
+                            TastyToast.makeText(getApplicationContext(), "User exists already", Toast.LENGTH_SHORT, TastyToast.INFO).show();
                         default:
-                            Toast.makeText(getApplicationContext(), "unknown error", Toast.LENGTH_SHORT).show();
+                            TastyToast.makeText(getApplicationContext(), "unknown error", Toast.LENGTH_SHORT, TastyToast.ERROR).show();
                             break;
                     }
                 }
@@ -105,6 +109,12 @@ public class SignUpActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
     }
     // method called when button is clicked
     public void SignUp(View view) {

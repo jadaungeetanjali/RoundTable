@@ -5,18 +5,22 @@ package com.silive.pc.roundtable;
  */
 
 public class User {
-    private String username;
+    private String user;
     private String email;
     private String password;
 
     public User(String email, String password, String username) {
-        this.username = username;
+        this.user = username;
         this.email = email;
         this.password = password;
     }
 
+    public User(String email, String password){
+        this.email = email;
+        this.password = password;
+    }
     public String getUsername() {
-        return username;
+        return user;
     }
 
     public String getEmail() {
