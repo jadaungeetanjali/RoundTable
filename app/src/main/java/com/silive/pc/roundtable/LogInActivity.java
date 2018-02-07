@@ -1,6 +1,7 @@
 package com.silive.pc.roundtable;
 
 import android.app.ProgressDialog;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import retrofit2.Response;
 public class LogInActivity extends AppCompatActivity {
 
     EditText etLogInEmail, etLogInPassword;
+    private TextInputLayout inputLayoutEmail, inputLayoutPassword;
 
     private String logInEmail, logInpassword;
     @Override
@@ -31,8 +33,13 @@ public class LogInActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        inputLayoutEmail = (TextInputLayout) findViewById(R.id.log_in_input_layout_email);
+        inputLayoutPassword = (TextInputLayout) findViewById(R.id.log_in_input_layout_password);
         etLogInEmail = findViewById(R.id.log_in_input_email);
         etLogInPassword = findViewById(R.id.log_in_input_password);
+
+        etLogInEmail.addTextChangedListener(new MyTextWatcher(etLogInEmail, inputLayoutEmail));
+        etLogInPassword.addTextChangedListener(new MyTextWatcher(etLogInPassword, inputLayoutPassword));
     }
 
     private void userLogin() {
@@ -43,6 +50,7 @@ public class LogInActivity extends AppCompatActivity {
 
         logInEmail = etLogInEmail.getText().toString().trim();
         logInpassword = etLogInPassword.getText().toString().trim();
+
 
         //Defining retrofit api service
         APIService service = ServiceGenerator.createService(APIService.class);
@@ -76,9 +84,25 @@ public class LogInActivity extends AppCompatActivity {
         });
     }
 
+    private boolean checkValidation() {
+        boolean validation = true;
 
+        if (!Validation.isEmailAddress(etLogInEmail,inputLayoutEmail, true)) {
+            validation = false;
+        }
+        if (!Validation.hasText(etLogInPassword, inputLayoutPassword)) {
+            validation = false;
+        }
+
+        return validation;
+    }
     public void LogIn(View view) {
-        userLogin();
+        if(checkValidation()){
+            userLogin();
+        }else{
+            Toast.makeText(getApplicationContext(), "Form Contains error", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 

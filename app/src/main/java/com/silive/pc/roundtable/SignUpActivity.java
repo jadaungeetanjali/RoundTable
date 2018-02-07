@@ -47,6 +47,9 @@ public class SignUpActivity extends AppCompatActivity {
         signUpEmail =  findViewById(R.id.sign_up_input_email);
         signUpPassword = findViewById(R.id.sign_up_input_password);
 
+        signUpUsername.addTextChangedListener(new MyTextWatcher(signUpUsername, inputLayoutName));
+        signUpEmail.addTextChangedListener(new MyTextWatcher(signUpEmail, inputLayoutEmail));
+        signUpPassword.addTextChangedListener(new MyTextWatcher(signUpPassword, inputLayoutPassword));
     }
 
     private void userSignUp() {
@@ -111,14 +114,28 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private void requestFocus(View view) {
-        if (view.requestFocus()) {
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    private boolean checkValidation() {
+        boolean validation = true;
+
+        if (!Validation.hasText(signUpUsername, inputLayoutName)) {
+            validation = false;
         }
+        if (!Validation.isEmailAddress(signUpEmail,inputLayoutEmail, true)) {
+            validation = false;
+        }
+        if (!Validation.hasText(signUpPassword, inputLayoutPassword)) {
+            validation = false;
+        }
+
+        return validation;
     }
     // method called when button is clicked
     public void SignUp(View view) {
-        userSignUp();
+        if (checkValidation()) {
+            userSignUp();
+        }else {
+            Toast.makeText(getApplicationContext(), "Form Contains error", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

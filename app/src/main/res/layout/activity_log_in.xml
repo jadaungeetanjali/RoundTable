@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="145dp"
+        android:layout_marginTop="165dp"
         app:hintTextAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +31,7 @@
         <EditText
             android:id="@+id/log_in_input_email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@android:dimen/app_icon_size"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:textColorHint="@color/colorAccent" />
@@ -52,7 +52,7 @@
         <EditText
             android:id="@+id/log_in_input_password"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@android:dimen/app_icon_size"
             android:hint="@string/password"
             android:inputType="textPassword"
             android:textColorHint="@color/colorAccent" />
