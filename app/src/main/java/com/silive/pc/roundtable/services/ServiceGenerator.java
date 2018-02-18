@@ -1,4 +1,6 @@
-package com.silive.pc.roundtable;
+package com.silive.pc.roundtable.services;
+
+import com.silive.pc.roundtable.config.APIUrl;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

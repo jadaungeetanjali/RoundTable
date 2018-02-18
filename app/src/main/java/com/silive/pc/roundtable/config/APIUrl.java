@@ -1,4 +1,4 @@
-package com.silive.pc.roundtable;
+package com.silive.pc.roundtable.config;
 
 /**
  * Created by PC on 2/2/2018.

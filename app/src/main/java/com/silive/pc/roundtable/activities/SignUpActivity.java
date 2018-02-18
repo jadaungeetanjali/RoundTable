@@ -1,4 +1,4 @@
-package com.silive.pc.roundtable;
+package com.silive.pc.roundtable.activities;
 
 import android.app.ProgressDialog;
 import android.support.design.widget.TextInputLayout;
@@ -6,30 +6,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sdsmdg.tastytoast.TastyToast;
+import com.silive.pc.roundtable.services.APIService;
+import com.silive.pc.roundtable.MyTextWatcher;
+import com.silive.pc.roundtable.R;
+import com.silive.pc.roundtable.services.ServiceGenerator;
+import com.silive.pc.roundtable.models.User;
+import com.silive.pc.roundtable.Validation;
 
 import java.io.IOException;
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private static String username, email, password;
-    private EditText signUpEmail, signUpPassword, signUpUsername;
-    private TextInputLayout inputLayoutName, inputLayoutEmail, inputLayoutPassword;
+    private static String email, password;
+    private EditText signUpEmail, signUpPassword;
+    private TextInputLayout inputLayoutEmail, inputLayoutPassword;
     String responseMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +39,13 @@ public class SignUpActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        inputLayoutName = (TextInputLayout) findViewById(R.id.sign_up_input_layout_name);
+
         inputLayoutEmail = (TextInputLayout) findViewById(R.id.sign_up_input_layout_email);
         inputLayoutPassword = (TextInputLayout) findViewById(R.id.sign_up_input_layout_password);
-        signUpUsername =  findViewById(R.id.sign_up_input_name);
         signUpEmail =  findViewById(R.id.sign_up_input_email);
         signUpPassword = findViewById(R.id.sign_up_input_password);
 
-        signUpUsername.addTextChangedListener(new MyTextWatcher(signUpUsername, inputLayoutName));
+
         signUpEmail.addTextChangedListener(new MyTextWatcher(signUpEmail, inputLayoutEmail));
         signUpPassword.addTextChangedListener(new MyTextWatcher(signUpPassword, inputLayoutPassword));
     }
@@ -58,7 +56,6 @@ public class SignUpActivity extends AppCompatActivity {
         progressDialog.setMessage("Signing Up...");
         progressDialog.show();
 
-        username = signUpUsername.getText().toString().trim();
         email = signUpEmail.getText().toString().trim();
         password = signUpPassword.getText().toString().trim();
 
@@ -67,7 +64,7 @@ public class SignUpActivity extends AppCompatActivity {
         APIService service = ServiceGenerator.createService(APIService.class);
 
         //Defining the user object as we need to pass it with the call
-        User user = new User(email, password, username);
+        User user = new User(email, password);
 
         //defining the call
         Call<ResponseBody> call = service.createUser(user);
@@ -117,9 +114,6 @@ public class SignUpActivity extends AppCompatActivity {
     private boolean checkValidation() {
         boolean validation = true;
 
-        if (!Validation.hasText(signUpUsername, inputLayoutName)) {
-            validation = false;
-        }
         if (!Validation.isEmailAddress(signUpEmail,inputLayoutEmail, true)) {
             validation = false;
         }

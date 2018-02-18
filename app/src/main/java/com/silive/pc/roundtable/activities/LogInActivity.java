@@ -1,19 +1,20 @@
-package com.silive.pc.roundtable;
+package com.silive.pc.roundtable.activities;
 
 import android.app.ProgressDialog;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.sdsmdg.tastytoast.TastyToast;
+import com.silive.pc.roundtable.services.APIService;
+import com.silive.pc.roundtable.MyTextWatcher;
+import com.silive.pc.roundtable.R;
+import com.silive.pc.roundtable.services.ServiceGenerator;
+import com.silive.pc.roundtable.models.User;
+import com.silive.pc.roundtable.Validation;
 
-import java.io.IOException;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,7 +70,7 @@ public class LogInActivity extends AppCompatActivity {
                 progressDialog.dismiss();
 
                 if (response.isSuccessful()){
-                    Toast.makeText(getApplicationContext(), response.body().getUsername(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), response.body().getUser(), Toast.LENGTH_SHORT).show();
                     //start new activity
                 }else{
                     Toast.makeText(getApplicationContext(), "Invalid email or password", Toast.LENGTH_LONG).show();

@@ -41,9 +41,6 @@ public class MyTextWatcher implements TextWatcher {
             case R.id.sign_up_input_email:
                 Validation.isEmailAddress(mEditText,mTextInputLayout,true);
                 break;
-            case R.id.sign_up_input_name:
-                Validation.hasText(mEditText, mTextInputLayout);
-                break;
             case R.id.sign_up_input_password:
                 Validation.hasText(mEditText, mTextInputLayout);
         }
