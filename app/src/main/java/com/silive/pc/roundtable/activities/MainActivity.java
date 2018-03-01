@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     public void logInClicked(View view) {
         Log.i("main", "Sign In in main clicked");
         Toast.makeText(this, "signIn in main clicked", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(MainActivity.this, LogInActivity.class);
+        Intent intent = new Intent(MainActivity.this, AddUserActivity.class);
         startActivity(intent);
     }
 
