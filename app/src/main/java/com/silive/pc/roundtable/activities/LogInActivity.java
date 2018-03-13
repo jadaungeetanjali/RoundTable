@@ -1,6 +1,8 @@
 package com.silive.pc.roundtable.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ public class LogInActivity extends AppCompatActivity {
 
     EditText etLogInEmail, etLogInPassword;
     private TextInputLayout inputLayoutEmail, inputLayoutPassword;
+
+    public static final String LOG_IN_PREFS_NAME = "LogInFile";
 
     private String logInEmail, logInpassword;
     @Override
@@ -71,7 +75,20 @@ public class LogInActivity extends AppCompatActivity {
 
                 if (response.isSuccessful()){
                     Toast.makeText(getApplicationContext(), response.body().getUser(), Toast.LENGTH_SHORT).show();
-                    //start new activity
+                    //token generated in response is stored using shared preferences to use in add user activity
+                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE).edit();
+                    editor.putString("token", response.body().getToken());
+                    editor.apply();
+
+                    //Toast.makeText(getApplicationContext(), response.body().getToken(), Toast.LENGTH_SHORT).show();
+
+                    SharedPreferences prefs = getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
+                    String restoredText = prefs.getString("token", null);
+                    Toast.makeText(getApplicationContext(), restoredText, Toast.LENGTH_SHORT).show();
+
+                    //start add user activity
+                    Intent intent = new Intent(LogInActivity.this, AddUserActivity.class);
+                    startActivity(intent);
                 }else{
                     Toast.makeText(getApplicationContext(), "Invalid email or password", Toast.LENGTH_LONG).show();
                 }

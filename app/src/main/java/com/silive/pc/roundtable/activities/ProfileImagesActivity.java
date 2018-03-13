@@ -36,7 +36,7 @@ public class ProfileImagesActivity extends AppCompatActivity implements ProfileI
         // Create a Toast that displays the position that was clicked
         Toast.makeText(this, "position clicked" + position, Toast.LENGTH_SHORT).show();
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("result", position);
+        returnIntent.putExtra("position", position);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }

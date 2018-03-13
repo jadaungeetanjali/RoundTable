@@ -1,6 +1,7 @@
 package com.silive.pc.roundtable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -68,6 +69,7 @@ public class ProfileImageAssets {
         add(R.drawable.light8);
         add(R.drawable.light9);
         }};
+
 
     // Getter methods that return lists of all profile images
     public static List<Integer> getProfileImages() {
