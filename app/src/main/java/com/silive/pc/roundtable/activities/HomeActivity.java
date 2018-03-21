@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.silive.pc.roundtable.ProfileImageAssets;
 import com.silive.pc.roundtable.R;
 import com.silive.pc.roundtable.fragments.ChannelFragment;
 import com.silive.pc.roundtable.fragments.Profile;
@@ -41,7 +42,8 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG_PROFILE = "profile";
     public static String CURRENT_TAG = TAG_CHANNEL;
 
-    private String userName, userEmail, userAvatarName, userAvatarColor;
+    private String userName, userEmail, userAvatarColor;
+    private int userAvatarName;
 
     // flag to load channel fragment when user presses back key
     private boolean shouldLoadChannelFragOnBackPress = true;
@@ -90,12 +92,12 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
         userName = prefs.getString("userName", "No token generated");
         userEmail = prefs.getString("userEmail", "No token generated");
+        userAvatarName = prefs.getInt("userAvatar", 0);
 
-        // name, website
+        // name, email, profileImage
         navHeaderUserName.setText(userName);
         navHeaderUserEmail.setText(userEmail);
-
-        // TODO load profile imageView
+        imgNavHeaderProfile.setImageResource(ProfileImageAssets.getProfileImages().get(userAvatarName));
 
     }
     /***

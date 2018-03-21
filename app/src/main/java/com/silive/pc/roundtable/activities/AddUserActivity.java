@@ -118,7 +118,7 @@ public class AddUserActivity extends AppCompatActivity {
                     editor.putString("userName", response.body().getName());
                     editor.putString("userEmail", response.body().getEmail());
                     editor.putString("userId", response.body().getId());
-                    editor.putString("userAvatar", response.body().getAvatarName());
+                    editor.putInt("userAvatar", mListIndex);
                     editor.putString("userAvatarColor", response.body().getAvatarColor());
                     editor.apply();
                     Intent intent = new Intent(AddUserActivity.this, HomeActivity.class);
