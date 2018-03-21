@@ -82,10 +82,6 @@ public class LogInActivity extends AppCompatActivity {
 
                     //Toast.makeText(getApplicationContext(), response.body().getToken(), Toast.LENGTH_SHORT).show();
 
-                    SharedPreferences prefs = getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
-                    String restoredText = prefs.getString("token", null);
-                    Toast.makeText(getApplicationContext(), restoredText, Toast.LENGTH_SHORT).show();
-
                     //start add user activity
                     Intent intent = new Intent(LogInActivity.this, AddUserActivity.class);
                     startActivity(intent);

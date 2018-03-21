@@ -31,7 +31,6 @@ public interface APIService {
     Call<User> userLogin(@Body User user);
 
     // the add User call
-    //@Headers("Content-Type: application/json")
     @POST("user/add")
     Call<AddUserModel> addUser(@Body AddUserModel addUser, @HeaderMap Map<String, String> headers);
 }

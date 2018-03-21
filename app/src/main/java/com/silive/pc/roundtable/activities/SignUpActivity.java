@@ -1,6 +1,7 @@
 package com.silive.pc.roundtable.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -86,6 +87,8 @@ public class SignUpActivity extends AppCompatActivity {
                     Log.i("response message", responseMessage);
                     //displaying the message from the response as toast
                     TastyToast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG,TastyToast.SUCCESS).show();
+                    Intent intent = new Intent(SignUpActivity.this, LogInActivity.class);
+                    startActivity(intent);
                 }else {
                     // error case
                     switch (response.code()) {

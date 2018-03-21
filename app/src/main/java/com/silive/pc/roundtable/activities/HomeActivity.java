@@ -1,8 +1,12 @@
 package com.silive.pc.roundtable.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,9 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.silive.pc.roundtable.R;
+import com.silive.pc.roundtable.fragments.ChannelFragment;
+import com.silive.pc.roundtable.fragments.Profile;
+
+import static com.silive.pc.roundtable.activities.LogInActivity.LOG_IN_PREFS_NAME;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -29,8 +38,10 @@ public class HomeActivity extends AppCompatActivity {
 
     // tags used to attach the fragments
     private static final String TAG_CHANNEL = "channel";
-    private static final String TAG_PERSONAL = "personal";
+    private static final String TAG_PROFILE = "profile";
     public static String CURRENT_TAG = TAG_CHANNEL;
+
+    private String userName, userEmail, userAvatarName, userAvatarColor;
 
     // flag to load channel fragment when user presses back key
     private boolean shouldLoadChannelFragOnBackPress = true;
@@ -56,15 +67,17 @@ public class HomeActivity extends AppCompatActivity {
         imgNavHeaderBg = (ImageView) navHeader.findViewById(R.id.nav_img_header_bg);
         imgNavHeaderProfile = (ImageView) navHeader.findViewById(R.id.nav_img_profile);
 
-        setUpNavigationView();
-
         // load nav menu header data
         loadNavHeader();
+
+        // initializing navigation menu
+        setUpNavigationView();
+
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
             CURRENT_TAG = TAG_CHANNEL;
-            //loadChannelFragment();
+            loadHomeFragment();
         }
     }
 
@@ -74,13 +87,71 @@ public class HomeActivity extends AppCompatActivity {
      * userName, userEmail
      */
     private void loadNavHeader() {
+        SharedPreferences prefs = getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
+        userName = prefs.getString("userName", "No token generated");
+        userEmail = prefs.getString("userEmail", "No token generated");
+
         // name, website
-        navHeaderUserName.setText("Geetanjali Jadaun");
-        navHeaderUserEmail.setText("silive.in");
+        navHeaderUserName.setText(userName);
+        navHeaderUserEmail.setText(userEmail);
 
         // TODO load profile imageView
 
     }
+    /***
+     * Returns respected fragment that user
+     * selected from navigation menu
+     */
+    private void loadHomeFragment() {
+        // selecting appropriate nav menu item
+        selectNavMenu();
+
+        // if user select the current navigation menu again, don't do anything
+        // just close the navigation drawer
+        if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
+            drawer.closeDrawers();
+
+            return;
+        }
+        // Sometimes, when fragment has huge data, screen seems hanging
+        // when switching between navigation menus
+        // So using runnable, the fragment is loaded with cross fade effect
+        Runnable mPendingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // update the main content by replacing fragments
+                Fragment fragment = getHomeFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                        android.R.anim.fade_out);
+                fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        };
+
+        // If mPendingRunnable is not null, then add to the message queue
+        if (mPendingRunnable != null) {
+            mHandler.post(mPendingRunnable);
+        }
+    }
+    public Fragment getHomeFragment() {
+        switch (navItemIndex) {
+            case 0:
+                // channel
+                ChannelFragment channelFragment = new ChannelFragment();
+                return channelFragment;
+            case 1:
+                // profile
+                Profile profileFragment = new Profile();
+                return profileFragment;
+            default:
+                return new ChannelFragment();
+        }
+    }
+    private void selectNavMenu() {
+        navigationView.getMenu().getItem(navItemIndex).setChecked(true);
+    }
+
 
     private void setUpNavigationView() {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -89,13 +160,14 @@ public class HomeActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     //Replacing the main content with ContentFragment Which is our Inbox View;
                     case R.id.nav_channels:
+                        toolbar.setTitle("ChannelName");
                         navItemIndex = 0;
+                        CURRENT_TAG = TAG_CHANNEL;
                         break;
-                    case R.id.nav_user1:
+                    case R.id.nav_profile:
                         navItemIndex = 1;
-                        break;
-                    case R.id.nav_user2:
-                        navItemIndex = 2;
+                        toolbar.setTitle("Profile");
+                        CURRENT_TAG = TAG_PROFILE;
                         break;
                     default:
                         navItemIndex = 0;
@@ -106,6 +178,9 @@ public class HomeActivity extends AppCompatActivity {
                     menuItem.setChecked(true);
                 }
                 menuItem.setChecked(true);
+                loadHomeFragment();
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
@@ -124,6 +199,7 @@ public class HomeActivity extends AppCompatActivity {
         drawer.setDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
     }
+
 
 
 }

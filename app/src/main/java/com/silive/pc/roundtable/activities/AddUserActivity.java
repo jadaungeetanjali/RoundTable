@@ -114,6 +114,13 @@ public class AddUserActivity extends AppCompatActivity {
                 if (response.isSuccessful()){
                     Toast.makeText(getApplicationContext(),"id"+ response.body().getId(), Toast.LENGTH_SHORT).show();
 
+                    SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE).edit();
+                    editor.putString("userName", response.body().getName());
+                    editor.putString("userEmail", response.body().getEmail());
+                    editor.putString("userId", response.body().getId());
+                    editor.putString("userAvatar", response.body().getAvatarName());
+                    editor.putString("userAvatarColor", response.body().getAvatarColor());
+                    editor.apply();
                     Intent intent = new Intent(AddUserActivity.this, HomeActivity.class);
                     startActivity(intent);
                 }else{
