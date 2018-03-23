@@ -1,7 +1,10 @@
 package com.silive.pc.roundtable.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,13 +14,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.silive.pc.roundtable.AlertDialogueBox;
 import com.silive.pc.roundtable.ProfileImageAssets;
 import com.silive.pc.roundtable.R;
 import com.silive.pc.roundtable.fragments.ChannelFragment;
@@ -201,7 +211,49 @@ public class HomeActivity extends AppCompatActivity {
         drawer.setDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
     }
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawers();
+            return;
+        }
+        // This code loads home fragment when back key is pressed
+        // when user is in other fragment than home
+        if (shouldLoadChannelFragOnBackPress) {
+            // checking if user is on other navigation menu
+            // rather than home
+            if (navItemIndex != 0) {
+                navItemIndex = 0;
+                CURRENT_TAG = TAG_CHANNEL;
+                loadHomeFragment();
+                return;
+            }
+        }
+        super.onBackPressed();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
 
+        // show menu only when home fragment is selected
+        if (navItemIndex == 0) {
+            getMenuInflater().inflate(R.menu.add_channel, menu);
+        }
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
 
-
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_add_channel) {
+            Toast.makeText(getApplicationContext(), "ADD CHANNEL!", Toast.LENGTH_LONG).show();
+            new AlertDialogueBox().getAlertDialogueBox(this);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
