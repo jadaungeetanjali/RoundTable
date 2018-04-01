@@ -1,10 +1,6 @@
 package com.silive.pc.roundtable.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -14,28 +10,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.silive.pc.roundtable.AlertDialogueBox;
+import com.silive.pc.roundtable.AlertDialogueBoxInterface;
 import com.silive.pc.roundtable.ProfileImageAssets;
 import com.silive.pc.roundtable.R;
 import com.silive.pc.roundtable.fragments.ChannelFragment;
 import com.silive.pc.roundtable.fragments.Profile;
 
+import java.util.ArrayList;
+
 import static com.silive.pc.roundtable.activities.LogInActivity.LOG_IN_PREFS_NAME;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxInterface {
 
     private NavigationView navigationView;
     private DrawerLayout drawer;
@@ -54,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private String userName, userEmail, userAvatarColor;
     private int userAvatarName;
+    private String channelName, channelDescription;
 
     // flag to load channel fragment when user presses back key
     private boolean shouldLoadChannelFragOnBackPress = true;
@@ -251,9 +245,16 @@ public class HomeActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add_channel) {
             Toast.makeText(getApplicationContext(), "ADD CHANNEL!", Toast.LENGTH_LONG).show();
-            new AlertDialogueBox().getAlertDialogueBox(this);
+            AlertDialogueBox dialogueBox = new AlertDialogueBox(this);
+            dialogueBox.getAlertDialogueBox();
+            //Toast.makeText(this, channels.get(0).toString(), Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void sendChannel(ArrayList<String> channelList) {
+        Toast.makeText(this, channelList.toString(), Toast.LENGTH_SHORT).show();
     }
 }
