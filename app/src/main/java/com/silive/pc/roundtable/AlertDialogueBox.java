@@ -57,7 +57,6 @@ public class AlertDialogueBox {
                                 dialogueBoxInterface.sendChannel(channelList);
                                 //Toast.makeText(activity, channelList.toString(), Toast.LENGTH_SHORT).show();
                                 dialog.cancel();
-                                activity.finish();
                             }
                         })
                 .setNegativeButton("Cancel",
@@ -65,7 +64,6 @@ public class AlertDialogueBox {
                             public void onClick(DialogInterface dialog,
                                                 int id) {
                                 dialog.cancel();
-                                activity.finish();
                             }
                         });
         // create alert dialog

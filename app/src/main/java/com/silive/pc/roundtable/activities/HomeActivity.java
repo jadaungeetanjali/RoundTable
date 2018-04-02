@@ -22,6 +22,7 @@ import com.silive.pc.roundtable.AlertDialogueBoxInterface;
 import com.silive.pc.roundtable.ProfileImageAssets;
 import com.silive.pc.roundtable.R;
 import com.silive.pc.roundtable.fragments.ChannelFragment;
+import com.silive.pc.roundtable.fragments.ChannelList;
 import com.silive.pc.roundtable.fragments.Profile;
 
 import java.util.ArrayList;
@@ -247,7 +248,7 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
             Toast.makeText(getApplicationContext(), "ADD CHANNEL!", Toast.LENGTH_LONG).show();
             AlertDialogueBox dialogueBox = new AlertDialogueBox(this);
             dialogueBox.getAlertDialogueBox();
-            //Toast.makeText(this, channels.get(0).toString(), Toast.LENGTH_SHORT).show();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -255,6 +256,23 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
 
     @Override
     public void sendChannel(ArrayList<String> channelList) {
-        Toast.makeText(this, channelList.toString(), Toast.LENGTH_SHORT).show();
+        channelName = channelList.get(0);
+        channelDescription = channelList.get(1);
+        if (channelName != null && channelDescription != null) {
+            navItemIndex = 0;
+            CURRENT_TAG = TAG_CHANNEL;
+            Bundle bundle = new Bundle();
+            bundle.putString("channelName", channelName);
+            bundle.putString("channelDescription", channelDescription);
+
+            // channel
+            ChannelList channelListFragment = new ChannelList();
+            channelListFragment.setArguments(bundle);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+                    android.R.anim.fade_out);
+            fragmentTransaction.replace(R.id.frame, channelListFragment, CURRENT_TAG);
+            fragmentTransaction.commitAllowingStateLoss();
+        }
     }
 }
