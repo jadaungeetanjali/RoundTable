@@ -44,7 +44,7 @@ public class Profile extends Fragment {
 
         SharedPreferences prefs = getContext().getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
         userName = prefs.getString("userName", "No token generated");
-        userEmail = prefs.getString("userEmail", "No token generated");
+        userEmail = prefs.getString("email", "No token generated");
         userAvatarName = prefs.getInt("userAvatar", 0);
 
         // name, email, profileImage

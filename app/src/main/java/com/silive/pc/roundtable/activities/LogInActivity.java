@@ -34,10 +34,6 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
-        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.log_in_activity_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         inputLayoutEmail = (TextInputLayout) findViewById(R.id.log_in_input_layout_email);
         inputLayoutPassword = (TextInputLayout) findViewById(R.id.log_in_input_layout_password);
         etLogInEmail = findViewById(R.id.log_in_input_email);

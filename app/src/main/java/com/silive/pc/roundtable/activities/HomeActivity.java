@@ -91,12 +91,12 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
     /***
      * Load navigation menu header information
      * like background image, profile image
-     * userName, userEmail
+     * userName, email
      */
     private void loadNavHeader() {
         SharedPreferences prefs = getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
         userName = prefs.getString("userName", "No token generated");
-        userEmail = prefs.getString("userEmail", "No token generated");
+        userEmail = prefs.getString("email", "No token generated");
         userAvatarName = prefs.getInt("userAvatar", 0);
 
         // name, email, profileImage

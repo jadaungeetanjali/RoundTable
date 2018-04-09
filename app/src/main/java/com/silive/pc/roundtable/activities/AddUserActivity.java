@@ -116,7 +116,7 @@ public class AddUserActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString("userName", response.body().getName());
-                    editor.putString("userEmail", response.body().getEmail());
+                    editor.putString("email", response.body().getEmail());
                     editor.putString("userId", response.body().getId());
                     editor.putInt("userAvatar", mListIndex);
                     editor.putString("userAvatarColor", response.body().getAvatarColor());
