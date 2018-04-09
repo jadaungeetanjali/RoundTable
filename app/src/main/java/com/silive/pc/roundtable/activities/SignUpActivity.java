@@ -36,11 +36,6 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.sign_up_activity_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
         inputLayoutEmail = (TextInputLayout) findViewById(R.id.sign_up_input_layout_email);
         inputLayoutPassword = (TextInputLayout) findViewById(R.id.sign_up_input_layout_password);
         signUpEmail =  findViewById(R.id.sign_up_input_email);
