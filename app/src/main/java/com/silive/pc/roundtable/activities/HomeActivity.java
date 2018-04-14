@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,12 +18,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.silive.pc.roundtable.AlertDialogueBox;
 import com.silive.pc.roundtable.AlertDialogueBoxInterface;
 import com.silive.pc.roundtable.ProfileImageAssets;
 import com.silive.pc.roundtable.R;
+import com.silive.pc.roundtable.RoundTableApplication;
 import com.silive.pc.roundtable.fragments.ChannelFragment;
-import com.silive.pc.roundtable.fragments.ChannelList;
+import com.silive.pc.roundtable.fragments.ChannelListFragment;
 import com.silive.pc.roundtable.fragments.Profile;
 
 import java.util.ArrayList;
@@ -37,6 +41,10 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
     private ImageView imgNavHeaderBg, imgNavHeaderProfile;
     private TextView navHeaderUserName, navHeaderUserEmail;
     private android.support.v7.widget.Toolbar toolbar;
+
+    private Socket mSocket;
+
+    private Boolean isConnected = true;
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
@@ -80,6 +88,14 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
         // initializing navigation menu
         setUpNavigationView();
 
+        RoundTableApplication app = (RoundTableApplication) this.getApplication();
+        mSocket = app.getSocket();
+        mSocket.on(Socket.EVENT_CONNECT,onConnect);
+        mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
+        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        mSocket.connect();
+
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
@@ -87,6 +103,68 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
             loadHomeFragment();
         }
     }
+
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(!isConnected) {
+                        if(null!=channelName)
+                            mSocket.emit("add channel", channelName, channelDescription);
+                        Toast.makeText(getApplicationContext(),
+                                "Connected", Toast.LENGTH_LONG).show();
+                        isConnected = true;
+                    }
+                }
+            });
+        }
+    };
+    private Emitter.Listener onDisconnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    isConnected = false;
+                    Toast.makeText(getApplicationContext(),
+                            "Disconnected. Please check your internet connection", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onConnectError = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    Toast.makeText(getApplicationContext(),
+                            "Failed to connect", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onChannelCreated = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Log.e(TAG, "Error connecting");
+                    Toast.makeText(getApplicationContext(),
+                            "Channel", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
+
+
 
     /***
      * Load navigation menu header information
@@ -265,14 +343,29 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
             bundle.putString("channelName", channelName);
             bundle.putString("channelDescription", channelDescription);
 
+            mSocket.emit("newChannel", channelName, channelDescription);
+            Toast.makeText(this, "new channel", Toast.LENGTH_SHORT).show();
+            /*
             // channel
-            ChannelList channelListFragment = new ChannelList();
+            ChannelListFragment channelListFragment = new ChannelListFragment();
             channelListFragment.setArguments(bundle);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
                     android.R.anim.fade_out);
             fragmentTransaction.replace(R.id.frame, channelListFragment, CURRENT_TAG);
             fragmentTransaction.commitAllowingStateLoss();
+            */
         }
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mSocket.disconnect();
+
+        mSocket.off(Socket.EVENT_CONNECT, onConnect);
+        mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+        mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
     }
 }

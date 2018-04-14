@@ -5,5 +5,5 @@ package com.silive.pc.roundtable.config;
  */
 
 public class APIUrl {
-    public static final String BASE_URL = "http://chattychatmacand.herokuapp.com/v1/";
+    public static final String BASE_URL = "http://chattymac.herokuapp.com/v1/";
 }

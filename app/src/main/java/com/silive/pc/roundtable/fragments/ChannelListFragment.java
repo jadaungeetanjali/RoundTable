@@ -10,14 +10,18 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.silive.pc.roundtable.R;
 import com.silive.pc.roundtable.RoundTableApplication;
+import com.silive.pc.roundtable.config.APIUrl;
+
+import java.net.URISyntaxException;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ChannelList extends Fragment {
+public class ChannelListFragment extends Fragment {
 
     private static final String TAG = "ChannelListFragment";
 
@@ -26,7 +30,7 @@ public class ChannelList extends Fragment {
 
     private Boolean isConnected = true;
 
-    public ChannelList() {
+    public ChannelListFragment() {
         // Required empty public constructor
     }
 
@@ -42,6 +46,7 @@ public class ChannelList extends Fragment {
         mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        mSocket.on("channelCreated", onChannelCreated);
         mSocket.connect();
 
         channelName = getArguments().getString("channelName");
@@ -103,6 +108,20 @@ public class ChannelList extends Fragment {
                     Log.e(TAG, "Error connecting");
                     Toast.makeText(getActivity().getApplicationContext(),
                             "Failed to connect", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onChannelCreated = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                   // Log.e(TAG, "Error connecting");
+                    Toast.makeText(getActivity().getApplicationContext(),
+                            "Channel", Toast.LENGTH_LONG).show();
                 }
             });
         }
