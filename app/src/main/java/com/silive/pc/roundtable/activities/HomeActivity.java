@@ -19,7 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.engineio.client.Transport;
+import com.github.nkzawa.socketio.client.Ack;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Manager;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.gson.Gson;
 import com.silive.pc.roundtable.AlertDialogueBox;
 import com.silive.pc.roundtable.AlertDialogueBoxInterface;
 import com.silive.pc.roundtable.ProfileImageAssets;
@@ -28,8 +33,14 @@ import com.silive.pc.roundtable.RoundTableApplication;
 import com.silive.pc.roundtable.fragments.ChannelFragment;
 import com.silive.pc.roundtable.fragments.ChannelListFragment;
 import com.silive.pc.roundtable.fragments.Profile;
+import com.silive.pc.roundtable.models.AddChannelModel;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.silive.pc.roundtable.activities.LogInActivity.LOG_IN_PREFS_NAME;
 
@@ -41,13 +52,13 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
     private ImageView imgNavHeaderBg, imgNavHeaderProfile;
     private TextView navHeaderUserName, navHeaderUserEmail;
     private android.support.v7.widget.Toolbar toolbar;
-
-    private Socket mSocket;
-
+    private Socket socket;
     private Boolean isConnected = true;
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
+
+    private String token;
 
     // tags used to attach the fragments
     private static final String TAG_CHANNEL = "channel";
@@ -88,14 +99,23 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
         // initializing navigation menu
         setUpNavigationView();
 
-        RoundTableApplication app = (RoundTableApplication) this.getApplication();
-        mSocket = app.getSocket();
-        mSocket.on(Socket.EVENT_CONNECT,onConnect);
-        mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
-        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        mSocket.connect();
 
+        try {
+            socket = IO.socket("https://chattymac.herokuapp.com/v1/");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        socket.on(Manager.EVENT_TRANSPORT, onTransport);
+        socket.on(Socket.EVENT_CONNECT,onConnect);
+        socket.on(Socket.EVENT_DISCONNECT,onDisconnect);
+        socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        socket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        Socket socket1 = socket.connect();
+        Log.i("socket info", socket1.toString());
+
+        SharedPreferences prefs = getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
+        token = prefs.getString("token", "No token generated");//"No token generated" is the default value.
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
@@ -104,6 +124,22 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
         }
     }
 
+    private Emitter.Listener onTransport = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Transport transport = (Transport)args[0];
+
+            transport.on(Transport.EVENT_REQUEST_HEADERS, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    headers.put("Authorization", "Bearer "+token);
+                }
+            });
+        }
+    };
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -112,7 +148,7 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
                 public void run() {
                     if(!isConnected) {
                         if(null!=channelName)
-                            mSocket.emit("add channel", channelName, channelDescription);
+                            socket.emit("newChannel", channelName, channelDescription);
                         Toast.makeText(getApplicationContext(),
                                 "Connected", Toast.LENGTH_LONG).show();
                         isConnected = true;
@@ -121,6 +157,7 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
             });
         }
     };
+
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -343,8 +380,21 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
             bundle.putString("channelName", channelName);
             bundle.putString("channelDescription", channelDescription);
 
-            mSocket.emit("newChannel", channelName, channelDescription);
-            Toast.makeText(this, "new channel", Toast.LENGTH_SHORT).show();
+            AddChannelModel addChannelModel = new AddChannelModel(channelName, channelDescription);
+            Log.i("sender", addChannelModel.getDescription());
+            Log.i("sender", addChannelModel.getName());
+            Gson gson = new Gson();
+            String json = gson.toJson(addChannelModel);
+            if(socket.connected() == true) {
+                Log.i("json", json);
+                socket.emit("newChannel", json, new Ack() {
+                    @Override
+                    public void call(Object... args) {
+                        Log.i("response socket", args.toString());
+                        Toast.makeText(getApplicationContext(), "new channel", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
             /*
             // channel
             ChannelListFragment channelListFragment = new ChannelListFragment();
@@ -361,11 +411,11 @@ public class HomeActivity extends AppCompatActivity implements AlertDialogueBoxI
     public void onDestroy() {
         super.onDestroy();
 
-        mSocket.disconnect();
+        socket.disconnect();
 
-        mSocket.off(Socket.EVENT_CONNECT, onConnect);
-        mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
-        mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+        socket.off(Socket.EVENT_CONNECT, onConnect);
+        socket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+        socket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        socket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
     }
 }

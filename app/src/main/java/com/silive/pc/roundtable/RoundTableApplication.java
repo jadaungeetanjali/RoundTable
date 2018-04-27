@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 
 public class RoundTableApplication extends Application {
 
-    private Socket mSocket;
+    public static Socket mSocket;
     {
         try {
             mSocket = IO.socket(APIUrl.BASE_URL);

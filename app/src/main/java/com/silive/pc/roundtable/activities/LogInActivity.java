@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -74,13 +75,17 @@ public class LogInActivity extends AppCompatActivity {
                     //token generated in response is stored using shared preferences to use in add user activity
                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString("token", response.body().getToken());
-                    editor.apply();
+                    editor.commit();
+                    Log.i("token", response.body().toString());
 
                     //Toast.makeText(getApplicationContext(), response.body().getToken(), Toast.LENGTH_SHORT).show();
 
-                    //start add user activity
-                    Intent intent = new Intent(LogInActivity.this, AddUserActivity.class);
-                    startActivity(intent);
+                    if (response.body().getToken() != null) {
+                        //start add user activity
+                        Intent intent = new Intent(LogInActivity.this, AddUserActivity.class);
+                        startActivity(intent);
+                    }
+
                 }else{
                     Toast.makeText(getApplicationContext(), "Invalid email or password", Toast.LENGTH_LONG).show();
                 }

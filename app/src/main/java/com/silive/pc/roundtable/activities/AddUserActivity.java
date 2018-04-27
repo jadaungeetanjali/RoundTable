@@ -102,6 +102,8 @@ public class AddUserActivity extends AppCompatActivity {
         Map<String, String> map = new HashMap<>();
         map.put("Content-Type", "application/json");
         map.put("Authorization", "Bearer "+token);
+        Toast.makeText(this, token, Toast.LENGTH_LONG).show();
+        System.out.println("bear"+ token);
         //defining the call
         Call<AddUserModel> call = service.addUser(addUser, map);
 
@@ -120,7 +122,7 @@ public class AddUserActivity extends AppCompatActivity {
                     editor.putString("userId", response.body().getId());
                     editor.putInt("userAvatar", mListIndex);
                     editor.putString("userAvatarColor", response.body().getAvatarColor());
-                    editor.apply();
+                    editor.commit();
                     Intent intent = new Intent(AddUserActivity.this, HomeActivity.class);
                     startActivity(intent);
                 }else{

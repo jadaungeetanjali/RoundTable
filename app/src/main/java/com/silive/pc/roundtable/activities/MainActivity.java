@@ -1,6 +1,7 @@
 package com.silive.pc.roundtable.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,9 +11,12 @@ import android.widget.Toast;
 
 import com.silive.pc.roundtable.R;
 
+import static com.silive.pc.roundtable.activities.LogInActivity.LOG_IN_PREFS_NAME;
+
 public class MainActivity extends AppCompatActivity {
 
     Button logInButton, signUpButton;
+    String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +28,17 @@ public class MainActivity extends AppCompatActivity {
 
         logInButton = (Button) findViewById(R.id.main_login_button);
         signUpButton = (Button) findViewById(R.id.main_sign_up_button);
+        SharedPreferences prefs = getSharedPreferences(LOG_IN_PREFS_NAME, MODE_PRIVATE);
+        token = prefs.getString("token", null);//"No token generated" is the default value.
+
+        if(token != null){
+            //start add user activity
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+
+        }
     }
+
 
     public void logInClicked(View view) {
         Log.i("main", "Sign In in main clicked");
